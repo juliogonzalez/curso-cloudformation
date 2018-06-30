@@ -1,0 +1,20 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "Mi primera instancia",
+  "Resources" : {
+    "MiInstancia": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-922914f7",
+        "InstanceType": "t2.micro",
+        "KeyName": "juliogonzalez-formacion"
+      }
+    }
+  },
+  "Outputs": {
+    "IpPublica": {
+      "Description" : "IP publica de la instancia",
+      "Value" : { "Fn::GetAtt": [ "MiInstancia", "PublicIp" ] }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "Mi primera instancia",
+  "Parameters": {
+    "IdImagen": {
+      "Type": "String",
+      "Description": "Imagen para la instancia (ami-922914f7 Amazon Linux 2018.03, ami-f4e6da91 SLES12SP3",
+      "AllowedValues": [ "ami-922914f7", "ami-f4e6da91" ]
+    },
+    "TipoInstancia": {
+      "Type": "String",
+      "Description": "Tipo de instancia",
+      "AllowedValues": [ "t2.micro", "t2.small" ],
+      "Default": "t2.micro"
+    },
+    "ParClave": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Description": "Par de claves para acceder a la instancia",
+      "AllowedPattern" : ".+",
+      "ConstraintDescription": "Es obligatorio seleccionar un par de claves"
+    }
+  },
+  "Resources" : {
+    "MiInstancia": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": { "Ref": "IdImagen" },
+        "InstanceType": { "Ref": "TipoInstancia" },
+        "KeyName": { "Ref": "ParClave" }
+      } 
+    } 
+  },
+  "Outputs": {
+    "IpPublica": {
+      "Description" : "IP publica de la instancia",
+      "Value" : { "Fn::GetAtt": [ "MiInstancia", "PublicIp" ] } 
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "Grupo de Escalado con ELB",
+  "Parameters": {
+    "TipoInstancia": {
+      "Type": "String",
+      "Description": "Tipo de instancia",
+      "AllowedValues": [ "t2.micro", "t2.small" ],
+      "Default": "t2.micro"
+    },
+    "NumeroInstancias" : {
+      "Type": "String",
+      "Description": "Numero de instancias para el grupo de escalado",
+      "AllowedValues" : [ "1", "2" ],
+      "Default": "1"
+    },
+    "ParClave": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Description": "Par de claves para acceder a la instancia",
+      "AllowedPattern" : ".+",
+      "ConstraintDescription": "Es obligatorio seleccionar un par de claves"
+    },
+    "ZonaDisponibilidad": {
+      "Type": "String",
+      "Description": "Zona de disponibilidad para los recursos (se usará la misma para todos)",
+      "AllowedPattern" : ".+",
+      "ConstraintDescription": "Es obligatorio escribir una zona de disponibilidad",
+      "Default": "us-east-2c"
+    }
+  },
+  "Resources": {
+    "MiBalanceador": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/cf-templates-12ygdzmfdu02u-us-east-2/reto-separar-elb/elb.json",
+        "Parameters": {
+          "ZonaDisponibilidad": { "Ref": "ZonaDisponibilidad" }
+        } 
+      } 
+    },
+    "MiGrupoEscalado": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/cf-templates-12ygdzmfdu02u-us-east-2/reto-separar-elb/grupo-autoescalado.json",
+        "Parameters": { 
+          "ZonaDisponibilidad": { "Ref": "ZonaDisponibilidad" },
+          "TipoInstancia": { "Ref": "TipoInstancia" },
+          "NumeroInstancias": { "Ref": "NumeroInstancias" },
+          "ParClave": { "Ref": "ParClave" },
+          "IdBalanceador" : { "Fn::GetAtt": [ "MiBalanceador", "Outputs.IdBalanceador" ] }
+        } 
+      } 
+    }
+  },
+  "Outputs": {
+    "URLBalanceador": {
+      "Description" : "Balanceador",
+      "Value" : {
+        "Fn::Join": [
+          "", 
+          [ "http://", "Fn::GetAtt": [ "MiBalanceador", "Outputs.URLBalanceador" ] ]
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "ELB",
+  "Parameters": {
+    "ZonaDisponibilidad": {
+      "Type": "String",
+      "Description": "Zona de disponibilidad para los recursos (se usará la misma para todos)",
+      "AllowedPattern" : ".+",
+      "ConstraintDescription": "Es obligatorio escribir una zona de disponibilidad",
+      "Default": "us-east-2c"
+    }
+  },
+  "Resources": {
+    "Balanceador": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "AvailabilityZones": [ { "Ref": "ZonaDisponibilidad" } ],
+        "Listeners": [
+          {
+            "LoadBalancerPort": "80",
+            "InstancePort": "80",
+            "Protocol": "TCP",
+            "InstanceProtocol" : "TCP"
+          }
+        ],
+        "HealthCheck": {
+          "Target": "TCP:80",
+          "HealthyThreshold": "2",
+          "UnhealthyThreshold": "2",
+          "Interval": "10",
+          "Timeout": "5"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "URLBalanceador": {
+      "Description" : "Balanceador",
+      "Value" : { "Fn::GetAtt": [ "Balanceador", "DNSName" ] }
+    },
+    "IdBalanceador": {
+      "Description": "Id del balanceador",
+      "Value": { "Ref": "Balanceador" }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "Mi primera instancia",
+  "Parameters": {
+    "TipoInstancia": {
+      "Type": "String",
+      "Description": "Tipo de instancia",
+      "AllowedValues": [ "t2.micro", "t2.small" ],
+      "Default": "t2.micro"
+    },
+    "IdInstancia": {
+      "Type": "String",
+      "Description": "ID de la instancia a la que se le montará el volumen",
+      "AllowedPattern" : ".+",
+      "ConstraintDescription": "Es obligatorio indicar el ID de instancia"
+    },
+    "ZonaDisponibilidad": {
+      "Type": "String",
+      "Description": "Zona de disponibilidad de la instancia",
+      "AllowedPattern" : ".+",
+      "ConstraintDescription": "Es obligatorio indicar la Zona de disponibilidad de la  instancia"
+    }
+  },
+  "Resources" : {
+    "MiVolumen": {
+      "Type": "AWS::EC2::Volume",
+      "Properties" : {
+        "AvailabilityZone" : { "Ref": "ZonaDisponibilidad" },
+        "Size": "1",
+        "VolumeType": "gp2"
+      }
+    },
+    "MiVolumenMontaje": {
+      "Type" : "AWS::EC2::VolumeAttachment",
+      "Properties" : {
+        "InstanceId" : { "Ref" : "IdInstancia" },
+        "VolumeId"  : { "Ref" : "MiVolumen" },
+        "Device" : "/dev/sdb"
+      }
+    }
+  }
+}

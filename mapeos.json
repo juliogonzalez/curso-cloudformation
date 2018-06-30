@@ -1,0 +1,50 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "Mi primera instancia",
+  "Parameters": {
+    "TipoInstancia": {
+      "Type": "String",
+      "Description": "Tipo de instancia",
+      "AllowedValues": [ "t2.micro", "t2.small" ],
+      "Default": "t2.micro"
+    },
+    "ParClave": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Description": "Par de claves para acceder a la instancia",
+      "AllowedPattern" : ".+",
+      "ConstraintDescription": "Es obligatorio seleccionar un par de claves"
+    }
+  },
+  "Mappings" : {
+    "types": {
+      "t2.micro": {
+        "AMI": "ami-922914f7"
+      },
+      "t2.small": {
+        "AMI": "ami-f4e6da91"
+      }
+    }
+  },
+  "Resources" : {
+    "MiInstancia": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap" : [
+            "types",
+            { "Ref": "TipoInstancia" },
+            "AMI"
+          ]
+        },
+        "InstanceType": { "Ref": "TipoInstancia" },
+        "KeyName": { "Ref": "ParClave" }
+      }
+    }
+  },
+  "Outputs": {
+    "IpPublica": {
+      "Description" : "IP publica de la instancia",
+      "Value" : { "Fn::GetAtt": [ "MiInstancia", "PublicIp" ] }
+    }
+  }
+}
