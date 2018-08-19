@@ -38,9 +38,10 @@
         "UserData": {
           "Fn::Base64" : {
             "Fn::Join" : ["\n", [ "#!/bin/bash -xe",
-                                  "while [ ! -e /dev/sdb ]; do echo Esperando al disco; sleep 10; done",
-                                  "mkfs.ext3 /dev/sdb",
-                                  "echo '/dev/sdb /mnt/ ext3 defaults,auto 0 0' >> /etc/fstab",
+                                  "while [ ! -e /dev/sdb -a ! -e /dev/xvdb ]; do echo Esperando al disco; sleep 1; done",
+                                  "if [ -e /dev/sdb ]; then DISK='/dev/sdb'; else DISK='/dev/xvdb'; fi",
+                                  "mkfs.ext3 ${DISK}",
+                                  "echo ${DISK} /mnt/ ext3 defaults,auto 0 0 >> /etc/fstab",
                                   "mount /mnt" ]
                          ]
           }
