@@ -27,13 +27,13 @@
         "ImageId": { "Ref": "IdImagen" },
         "InstanceType": { "Ref": "TipoInstancia" },
         "KeyName": { "Ref": "ParClave" }
-      } 
-    } 
+      }
+    }
   },
   "Outputs": {
     "IpPublica": {
       "Description" : "IP publica de la instancia",
-      "Value" : { "Fn::GetAtt": [ "MiInstancia", "PublicIp" ] } 
+      "Value" : { "Fn::GetAtt": [ "MiInstancia", "PublicIp" ] }
     }
   }
 }
